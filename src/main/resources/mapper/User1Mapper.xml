@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.score.dao.User1Mapper">
+    <resultMap id="BaseResultMap" type="com.score.bean.User1">
+        <constructor>
+            <idArg column="t_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+            <arg column="t_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <arg column="t_phone" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <arg column="t_address" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <arg column="t_enrol_date" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+            <arg column="t_des" javaType="java.lang.String" jdbcType="VARCHAR" />
+        </constructor>
+    </resultMap>
+
+    <insert id="addUser" parameterType="com.score.bean.User1">
+    insert into user1
+    (name,phone,address,enrol_date,des)
+    values
+    (
+    #{name},
+    #{phone},
+    #{address},
+    #{enrolDate},
+    #{des}
+    )
+  </insert>
+    <update id="updateUserByName" parameterType="com.score.bean.User1">
+    update user1
+    set
+    phone=#{phone},
+    address=#{address},
+    enrol_date=#{enrolDate},
+    des=#{des}
+    where name = #{name}
+  </update>
+
+    <select id="selectByName" resultType="java.lang.Integer">
+    SELECT
+    count(*)
+    FROM user1
+    WHERE name=#{name}
+  </select>
+</mapper>

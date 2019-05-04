@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>剩余寿命预测</title>
+    <link rel="stylesheet" type="text/css"
+          href="assets/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="assets/admin/css/admin.css" />
+</head>
+
+<body>
+<div class="page-content-wrap" id="daojuSearch">
+    <h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">剩余寿命预测</h5>
+    <hr>
+    <div class="layui-form-item">
+        <div style="display: flex;justify-content:space-between;margin:20px;">
+            <div class="left-side">
+                <div class="layui-inline tool-btn">
+                    <!--<button type="button" class="layui-btn" id="plcupload">上传PLC</button>-->
+                    <!--<button type="button" class="layui-btn" id="upload">上传test</button>-->
+                    <button type="button" class="layui-btn" id="wjupload">上传文件</button>
+                </div>
+            </div>
+            <div class="right-side">
+                <div class="layui-inline">
+                    <input type="text" id="daojuNameSearch" placeholder="输入刀具名称"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <button class="layui-btn layui-btn-normal site-demo-active"
+                        data-type="search" id="searchDaoju">搜索</button>
+            </div>
+        </div>
+        <table class="layui-table"
+               lay-data="{ url:'/relife/getAll', page:true, id:'relifeTest'}"
+               lay-filter="demo">
+            <thead>
+            <tr>
+                <th lay-data="{type:'checkbox', }"></th>
+                <th lay-data="{field:'redaojuNo',sort: true}">刀具编号</th>
+                <th lay-data="{field:'redaojuName'}">刀具名称</th>
+                <th lay-data="{field:'machineId'}">所在机床</th>
+                <th lay-data="{field:'redaojuState'}">刀具状态</th>
+                <th lay-data="{field:'restaffId'}">分管员工</th>
+                <th lay-data="{field:'durTime'}">加入时间</th>
+                <!--<th lay-data="{field:'useTime'}">使用时间</th>-->
+                <th lay-data="{field:'restTime',templet:'#state'}">剩余寿命</th>
+                <!--<th lay-data="{fixed: 'right', width:220, align:'left', toolbar: '#barDemo'}"></th>-->
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+    </script>
+    <hr></hr>
+    <h5 style="text-align: center;">社会主义核心价值观非常队@2019</h5>
+</div>
+<script src="assets/admin/layui/layui.all.js" type="text/javascript"
+        charset="utf-8"></script>
+
+
+<script type="text/html" id="state">
+    {{# if(d.restTime >60.0){}}
+    <span style="color: #3cc51f;">{{ d.restTime }}</span>
+    {{# }
+    else{}}
+    <span style="color: #f43530;">{{ d.restTime }}</span>
+    {{#  }
+    }}
+</script>
+
+<script>
+    layui.use('upload', function(){
+        var table = layui.table;
+        var $ = layui.jquery
+            ,upload = layui.upload;
+
+        //指定允许上传的文件类型
+        // upload.render({
+        //     elem: '#plcupload'
+        //     ,url: '/predict/import'
+        //     ,accept: 'file' //普通文件
+        //     ,done: function(res){
+        //         console.log(res)
+        //     }
+        // });
+        // upload.render({
+        //     elem: '#upload'
+        //     ,url: '/test/import'
+        //     ,accept: 'file' //普通文件
+        //     ,done: function(res){
+        //         console.log(res)
+        //     }
+        // });
+
+        //bzqtesttestetste
+        upload.render({
+            elem: '#wjupload'
+            ,url: '/ups'
+            ,accept: 'file' //普通文件
+            ,done: function(res){
+                console.log(res)
+            }
+        });
+
+        var active = {
+            search:function(){
+                var name=$("#daojuNameSearch").val();
+                table.reload('relifeTest',{
+                    method: 'POST'
+                    , where: {"redaojuName":name},page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+
+                })
+            }
+        };
+        $('#daojuSearch .layui-btn').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+
+    // $(function() {
+    //     $("relife").each(function() {
+    //         if(parseFloat($(this).text()) < 60) {
+    //             $(this).parent().css("color", "#f00");
+    //         }
+    //     });
+    // });
+
+
+</script>
+
+</body>
+
+</html>

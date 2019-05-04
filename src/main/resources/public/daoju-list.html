@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>刀具管理</title>
+    <link rel="stylesheet" type="text/css"
+          href="assets/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="assets/admin/css/admin.css" />
+</head>
+
+<body>
+<div class="page-content-wrap" id="daojuSearch">
+    <h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">刀具管理</h5>
+    <hr>
+    <div class="layui-form-item">
+        <div style="display: flex;justify-content:space-between;margin:20px;">
+            <div class="left-side">
+                <div class="layui-inline tool-btn">
+                    <button class="layui-btn layui-btn-small site-demo-active"
+                            data-type="tabAdd">
+                        <i class="layui-icon">&#xe654;</i>新增刀具
+                    </button>
+                    <!-- 				<button
+                                        class="layui-btn layui-btn-small layui-btn-warm listOrderBtn hidden-xs"
+                                        data-url="/admin/category/listorderall.html">
+                                        <i class="iconfont">&#xe656;</i>
+                                    </button> -->
+                </div>
+            </div>
+            <div class="right-side">
+                <div class="layui-inline">
+                    <input type="text" id="daojuNameSearch" placeholder="输入刀具名称"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <button class="layui-btn layui-btn-normal site-demo-active"
+                        data-type="search" id="searchDaoju">搜索</button>
+            </div>
+        </div>
+        <table class="layui-table"
+               lay-data="{ url:'/daoju/getAllDaoju', page:true, id:'daojuTest'}"
+               lay-filter="demo">
+            <thead>
+            <tr>
+                <th lay-data="{type:'checkbox', }"></th>
+                <th lay-data="{field:'daojuNo',sort: true}">刀具编号</th>
+                <th lay-data="{field:'daojuName'}">刀具名称</th>
+                <th lay-data="{field:'daojuType'}">刀具类型</th>
+                <th lay-data="{field:'daojuQuality'}">刀具材质</th>
+                <th lay-data="{field:'daojuEdge'}">刀具刃径</th>
+                <th lay-data="{field:'daojuShank'}">刀具柄径</th>
+                <th lay-data="{field:'daojuTotlen'}">刀具总长</th>
+                <th lay-data="{fixed: 'right', width:220, align:'left', toolbar: '#barDemo'}"></th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+    </script>
+    <hr></hr>
+    <h5 style="text-align: center;">社会主义核心价值观非常队@2019</h5>
+</div>
+<script src="assets/admin/layui/layui.all.js" type="text/javascript"
+        charset="utf-8"></script>
+<script>
+    layui.use('table', function() {
+        var $ = layui.jquery
+        var table = layui.table;
+        //监听表格复选框选择
+        table.on('checkbox(demo)', function(obj) {
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(demo)', function(obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('是否删除该刀具？', function(index) {
+                    var data = obj.data;
+                    $.ajax({
+                        //几个参数需要注意一下
+                        type: "POST",//方法类型
+                        dataType: "json",//预期服务器返回的数据类型
+                        url: "/daoju/deleteDaoju",//url
+                        data: data,
+                        success: function (result) {
+                            if (result.code == "0") {
+                                layer.close(index);
+                                layer.msg('删除刀具成功');
+                                layui.table.reload('daojuTest',{page:{curr:1}});
+                            }else{
+                                layer.msg('删除刀具失败', {
+                                    icon: 5
+                                });
+                            }
+                        },
+                        error : function() {
+                            layer.msg('服务器错误', {
+                                icon: 5
+                            });
+                        }
+                    });
+                });
+            }
+            if (obj.event === 'edit') {
+                var editFrom = layui.layer.open({
+                    title : "编辑学生信息",
+                    type : 2,
+                    content : "/daojuEdit.html",//弹出层页面
+                    area: ['800px', '400px'],
+                    success : function(layero, index){
+                        var body = layui.layer.getChildFrame('body', index);
+                        //获取窗口对象
+                        var iframeWindow = layero.find('iframe')[0].contentWindow;
+                        body.find("#daojuNo").val(data.daojuNo);
+                        body.find("#daojuName").val(data.daojuName);
+                        body.find(".daojuType option[value="+data.daojuType+"]").attr("selected","selected");
+                        body.find("#daojuQuality").val(data.daojuQuality);
+                        body.find("#daojuEdge").val(data.daojuEdge);
+                        body.find("#daojuShank").val(data.daojuShank);
+                        body.find("#daojuTotlen").val(data.daojuTotlen);
+                        iframeWindow.layui.form.render();
+                        iframeWindow.layui.form.render('select');
+                    }});
+            }
+        });
+
+        //触发事件
+        var active = {
+            tabAdd : function() {
+
+                layer.open({
+                    type: 2,
+                    title: '添加刀具信息',
+                    shadeClose: true,
+                    shade: false,
+                    /*    maxmin: true,  *///开启最大化最小化按钮
+                    area: ['800px', '400px'],
+                    content: '/daojuAdd.html'
+                });
+
+            },search:function(){
+                var name=$("#daojuNameSearch").val();
+                table.reload('daojuTest',{
+                    method: 'POST'
+                    , where: {"daojuName":name},page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+
+                })
+            }
+        };
+
+        $('#daojuSearch .layui-btn').on('click', function() {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+</script>
+</body>
+
+</html>
